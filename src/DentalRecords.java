@@ -156,6 +156,7 @@ public class DentalRecords {
 
     public static void extractTooth(Scanner scanner, String[] familyNames, char[][][] familyTeeth, int numPeople) {
         System.out.print("Which family member: ");
+
         String familyMember = scanner.next().toUpperCase();
 
         int familyIndex = -1;
@@ -167,34 +168,49 @@ public class DentalRecords {
             } // End of if statement
         } // End of for loop
 
-        if (familyIndex == -1) {
+        while (familyIndex == -1) {
             System.out.println("Invalid family member, try again.");
-            return;
-        } // End of if statement
+            familyMember = scanner.next().toUpperCase();
+            for (exactIndex = 0; exactIndex < numPeople; exactIndex++) {
+                if (familyNames[exactIndex].toUpperCase().equals(familyMember)) {
+                    familyIndex = exactIndex;
+                    break;
+                } // End of if statement
+            } // End of for loop
+        } // End of while loop
 
         System.out.print("Which tooth layer (U)pper or (L)ower: ");
         char layer = scanner.next().toUpperCase().charAt(0);
         int layerIndex = (layer == 'U') ? 0 : (layer == 'L') ? 1 : -1;
 
-        if (layerIndex == -1) {
+
+        while (layerIndex == -1) {
             System.out.println("Invalid layer, try again.");
-            return;
+            layer = scanner.next().toUpperCase().charAt(0);
+            layerIndex = (layer == 'U') ? 0 : (layer == 'L') ? 1 : -1;
         } // End of if statement
 
-        System.out.print("Which tooth number (1-" + MAX_TEETH + "): ");
-        int toothNumber = scanner.nextInt();
-        if (toothNumber < 1 || toothNumber > MAX_TEETH) {
-            System.out.println("Invalid tooth number, try again.");
-            return;
-        } // End of if statement
+        int toothNumber;
+        boolean validTooth = false;
+        while (!validTooth) {
+            do {
+                System.out.print("Which tooth number (1-" + MAX_TEETH + "): ");
+                toothNumber = scanner.nextInt();
+                if (toothNumber < 1 || toothNumber > MAX_TEETH) {
+                    System.out.println("Invalid tooth number, try again.");
+                }
+            } while (toothNumber < 1 || toothNumber > MAX_TEETH);
 
-        if (familyTeeth[familyIndex][layerIndex][toothNumber - 1] == 'M') {
-            System.out.println("Missing tooth, try again.");
-        } else {
-            familyTeeth[familyIndex][layerIndex][toothNumber - 1] = 'M';
-            System.out.println("Tooth extracted successfully.");
-        } // End of if statement
-    } // End of extractTooth method
+            if (familyTeeth[familyIndex][layerIndex][toothNumber - 1] == 'M') {
+                System.out.println("Missing tooth, try again.");
+
+            } else {
+                validTooth = true;
+                familyTeeth[familyIndex][layerIndex][toothNumber - 1] = 'M';
+                System.out.println("Tooth extracted successfully.");
+            } // End of else statement
+        } // End of while loop
+    }// End of do loop
 
     /**
      * This method counts the number of the different types of teeth and then calculates location of root canal
@@ -223,7 +239,7 @@ public class DentalRecords {
         } // End of for loop
 
         // Solve the root canal function: Ix^2 + Bx - M = 0
-        double discriminant = numBicuspids * numBicuspids - 4 * numIncissors * numMissing;
+        double discriminant = numBicuspids * numBicuspids - 4 * numIncissors * -numMissing;
         if (discriminant >= 0) {
             double root1 = (-numBicuspids + Math.sqrt(discriminant)) / (2 * numIncissors);
             double root2 = (-numBicuspids - Math.sqrt(discriminant)) / (2 * numIncissors);
